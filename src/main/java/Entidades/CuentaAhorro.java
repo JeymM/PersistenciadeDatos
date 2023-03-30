@@ -1,31 +1,24 @@
 package Entidades;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.List;
 
 import Excepciones.Limites;
 import Persistencia.CuentaBaseDatos;
 import Persistencia.Repositorio;
 
-public class CuentaAhorro extends Cuenta implements Movimientos{
+public class CuentaAhorro extends Cuenta implements Movimientos {
 
 	private Repositorio repositorioCuenta;
 	
 	
-	public CuentaAhorro(double numCuenta, float saldo, String nomPropietario, String tipoCuenta) {
-		super(numCuenta, saldo, nomPropietario, tipoCuenta);
+	public CuentaAhorro(String numCuenta, float saldo, String nomPropietario,int tipoCuenta) {
+		super(numCuenta, saldo, nomPropietario,tipoCuenta);
 		repositorioCuenta = new CuentaBaseDatos();
 	}
 	
 	
-	  public void guardarCuenta(CuentaAhorro ahorro) {
-		   repositorioCuenta.Guardar(ahorro);
-		   
-	   }
-	  
-	  
-	  
-	  
-	  
 	  
 	public void Retirar(double valor) throws Limites {
 		this.cantRetiros++;
@@ -58,11 +51,24 @@ public class CuentaAhorro extends Cuenta implements Movimientos{
 		
 	}
 
+
 	@Override
-	public void Imprimir() {
-		
+	public void Transferir(String tipoCuenta, double valor) {
+		//CuentaCorriente cuentac=new CuentaCorriente();
+		if(tipoCuenta=="Corriente") {
+			double interes=(valor*0.015);
+			valor+=interes;
+			
+			this.saldo-=valor;
+			//cuentac.Depositar(valor);
+			
+		}else {
+			this.Depositar(valor);
+		}
 		
 	}
+
+	
 
 
 	

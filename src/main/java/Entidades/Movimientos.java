@@ -7,4 +7,8 @@ public interface Movimientos {
 
 	public abstract void Depositar(double valor);
 	
+	public abstract void  Transferir(String tipoCuenta,double valor) throws Limites; 
+		
+	
+	
 }
