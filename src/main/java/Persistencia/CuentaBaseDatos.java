@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Entidades.Cuenta;
+import Entidades.CuentaAhorro;
+import Entidades.CuentaCorriente;
 import Excepciones.Limites;
 
 public class CuentaBaseDatos implements Repositorio {
@@ -30,8 +32,13 @@ public class CuentaBaseDatos implements Repositorio {
 
 	private void CrearTabla() {
 		try (Connection conexion = DriverManager.getConnection(con)) {
-			String sql = "CREATE TABLE IF NOT EXISTS Cuentas (\n" + " id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-					+ " numCuenta TEXT NOT NULL UNIQUE\n" + " saldo float NOT NULL,\n" +" nombrePropietario TEXT NOT NULL,\n" + "tipoCuenta INTEGER NOT NULL,\\n\");";
+			 String sql = "CREATE TABLE IF NOT EXISTS cuentas (\n"
+	                    + " id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+	                    + " numCuenta TEXT NOT NULL UNIQUE,\n"
+	                    + " saldo FLOAT NOT NULL,\n"
+	                    + " nomPropietario TEXT NOT NULL,\n"
+	                    + " tipoCuenta INTEGER NOT NULL\n"
+	                    + ");";
 
 			Statement sentencia = conexion.createStatement();
 			sentencia.execute(sql);
@@ -39,13 +46,15 @@ public class CuentaBaseDatos implements Repositorio {
 			System.out.println("Error de conexión: " + e.getMessage());
 		}
 	}
-
+	@Override
 	public void Guardar(Object objeto) {
 		try (Connection conexion = DriverManager.getConnection(con)) {
 			Cuenta cuenta = (Cuenta) objeto;
-			String sentenciaSql = "INSERT INTO cuentas (numCuenta,saldo , nomPropietario,tipoCuenta) "
-					+ " VALUES('" + cuenta.getNumCuenta() + "', " + cuenta.getSaldo() + ", '"
-					+ cuenta.getNomPropietario() + "',"+cuenta.getTipoCuenta() + ");";
+			  String sentenciaSql = "INSERT INTO cuentas (numCuenta, saldo,nomPropietario , tipoCuenta) " +
+	                    " VALUES('" + cuenta.getNumCuenta()
+	                    + "', " + cuenta.getSaldo()
+	                    + ", '" + cuenta.getNomPropietario()
+	                    + "', '" + cuenta.getTipoCuenta() + "');";
 			Statement sentencia = conexion.createStatement();
 			sentencia.execute(sentenciaSql);
 		} catch (SQLException e) {
@@ -55,33 +64,59 @@ public class CuentaBaseDatos implements Repositorio {
 		}
 
 	}
+//
+//	@Override
+//	public Object Buscar(String numCuenta) {
+//		try(Connection conexion=DriverManager.getConnection(con)){
+//			String sentenciaSQL= "SELECT * FROM cuentas WHERE numCuenta = ?";
+//			PreparedStatement sentencia=conexion.prepareStatement(sentenciaSQL);
+//			sentencia.setString(1, numCuenta);
+//			ResultSet resultadoConsulta=sentencia.executeQuery();
+//			if (resultadoConsulta != null && resultadoConsulta.next()) {
+//				Cuenta cuenta=null;
+//				String numCuentaResultado=resultadoConsulta.getString("numCuenta");
+//				float saldo=resultadoConsulta.getFloat("saldo");
+//				String nomPropietario=resultadoConsulta.getString("nomPropietario");
+//				int tipoCuenta=resultadoConsulta.getInt("tipoCuenta");
+//				
+//				cuenta=new Cuenta(numCuentaResultado,saldo,nomPropietario,tipoCuenta) ;
+//					
+//					
+//				return cuenta;
+//			}
+//			
+//		
+//	}catch(SQLException e) {
+//		System.err.println("Error de conexion: "+e);
+//	}
+//		return null;
+//	}
+	 @Override
+	    public Object Buscar(String numCuenta) {
+	        try (Connection conexion = DriverManager.getConnection(con)) {
+	            String sentenciaSQL = "SELECT * FROM cuentas WHERE numCuenta= ?";
+	            PreparedStatement sentencia = conexion.prepareStatement(sentenciaSQL);
+	            sentencia.setString(1, numCuenta);
+	            ResultSet resultadoConsulta = sentencia.executeQuery();
+	            if (resultadoConsulta != null && resultadoConsulta.next()) {
+	                Cuenta cuenta = null;
+	                String tipoCuenta = resultadoConsulta.getString("tipoCuenta");
+	                float saldo = resultadoConsulta.getFloat("saldo");
+	                String numResultado = resultadoConsulta.getString("numCuenta");
+	                String nompropietario = resultadoConsulta.getString("nompropietario");
 
-	@Override
-	public Object Buscar(String numCuenta) {
-		try(Connection conexion=DriverManager.getConnection(con)){
-			String sentenciaSQL= "SELECT * FROM personas WHERE identificacion = ?";
-			PreparedStatement sentencia=conexion.prepareStatement(sentenciaSQL);
-			sentencia.setString(1, numCuenta);
-			ResultSet resultadoConsulta=sentencia.executeQuery();
-			if (resultadoConsulta != null && resultadoConsulta.next()) {
-				Cuenta cuentaBancaria=null;
-				String numCuentaResultado=resultadoConsulta.getString("numCuenta");
-				float saldo=resultadoConsulta.getFloat("saldo");
-				String nomPropietario=resultadoConsulta.getString("nomPropietario");
-				int tipoCuenta=resultadoConsulta.getInt("tipoCuenta");
-				
-				cuentaBancaria=new Cuenta(numCuentaResultado,saldo,nomPropietario,tipoCuenta) ;
-					
-					
-				return cuentaBancaria;
-			}
-			
-		
-	}catch(SQLException e) {
-		System.err.println("Error de conexion: "+e);
-	}
-		return null;
-	}
+	                if(tipoCuenta=="c"){
+	                    return new CuentaCorriente(numResultado, saldo, nompropietario, tipoCuenta);
+	                } else {
+	                    return new CuentaAhorro(numResultado, saldo, nompropietario, tipoCuenta);
+	                }
+	            }
+
+	        } catch (SQLException e) {
+	            System.err.println("Error de conexión: " + e);
+	        }
+	        return null;
+	    }
 
 	/*@Override
 	public List<?> Listar() {
@@ -111,21 +146,19 @@ public class CuentaBaseDatos implements Repositorio {
         return null;
 
 }*/
-	public void ActualizarSaldo() {
-		/*try (Connection conexion = DriverManager.getConnection(con)) {
-				Cuenta cuenta=new Cuenta();
-		}
-			 String sentenciaSql = "Update cuentas + SET saldo= " +Cuenta.class ;
-	          //  PreparedStatement sentencia = con.prepareStatement(sentenciaSql);
-	        //    ResultSet resultadoConsulta = sentencia.executeQuery();
-	}*/
-	}
+	   public void actualizar(String numCuenta, float saldo){
+	        try (Connection conexion = DriverManager.getConnection(con)) {
+	            String sentenciaSql = "UPDATE cuentas SET saldo = '" + saldo + "'  WHERE numCuenta = '" + numCuenta + "';";
+	            Statement sentencia = conexion.createStatement();
+	            sentencia.execute(sentenciaSql);
+	        } catch (SQLException e) {
+	            System.err.println("Error de conexión: " + e);
+	        } catch (Exception e) {
+	            System.err.println("Error " + e.getMessage());
+	        }
+	   }
 
-	@Override
-	public void Guardar(Cuenta cuenta) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 
 	

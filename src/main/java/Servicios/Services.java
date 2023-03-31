@@ -20,20 +20,20 @@ public class Services {
 	}
 	
 
-	public void Guardar(Cuenta cuenta) {
-		   repositorioCuenta.Guardar(cuenta);
+	public void Guardar(Object object) {
+		   repositorioCuenta.Guardar(object);
 		
 	}
 	
-
-	public Object Buscar(String numCuenta) {
-		Object cuenta = repositorioCuenta.Buscar(numCuenta);
-        if(cuenta == null) {
-            System.out.println("No se encontro la cuenta");
-        }
-        return (Cuenta) cuenta;
-	}
-		
+	  public  Cuenta  Buscar ( String  numeroDeCuenta ){
+	        return ( Cuenta ) repositorioCuenta . Buscar ( numeroDeCuenta );
+	    }
+	
+	
+	
+	 public void actualizarSaldo(String numCuenta, float saldoConsignación){
+	        repositorioCuenta.actualizar(numCuenta, saldoConsignación);
+	    }	
 	
 	
 	

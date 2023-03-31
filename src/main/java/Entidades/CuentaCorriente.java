@@ -1,10 +1,12 @@
 package Entidades;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import Excepciones.Limites;
 import Persistencia.CuentaBaseDatos;
 import Persistencia.Repositorio;
+import Servicios.Services;
 
 
 public class CuentaCorriente extends Cuenta implements Movimientos {
@@ -12,11 +14,13 @@ public class CuentaCorriente extends Cuenta implements Movimientos {
 	int numTransferen;
 		
 	private Repositorio repositorioCuenta;
+	private Services services;
 	
 	
-	public CuentaCorriente(String numCuenta, float saldo, String nomPropietario,int tipoCuenta) {
+	public CuentaCorriente(String numCuenta, float saldo, String nomPropietario,String tipoCuenta) {
 		super(numCuenta, saldo, nomPropietario,tipoCuenta);
 		repositorioCuenta = new CuentaBaseDatos();
+		services =new Services();
 	}
 	
 	
@@ -56,24 +60,35 @@ public class CuentaCorriente extends Cuenta implements Movimientos {
 
 	}
 
+
+
 	@Override
-	public void Transferir(String tipoCuenta, double valor) throws Limites {
-		this.numTransferen++;
-		if(tipoCuenta.equalsIgnoreCase("ahorro")) {
-			if(this.numTransferen>2) {
-				System.out.println("No tiene permitido realizar más transferencias");
-			}else {
-				//CuentaAhorro cuentaa=new CuentaAhorro();
-				//cuentaa.Depositar(valor);
-			}
-		}else {
-			this.Depositar(valor);
-		}
-		
-	}
-
+	public Cuenta[] transferirDinero(Cuenta cuentaO, Cuenta cuentaD, float transferencia) throws Limites{
+        double cobroAdicional = 0, cantidadRealARestar =transferencia;
+        CuentaCorriente corriente;
+        if(cuentaO.getTipoCuenta() != cuentaD.getTipoCuenta()){
+            cobroAdicional += (transferencia*2)/100;
+            transferencia += cobroAdicional;
+           
+        }
+        if(cantidadRealARestar > cuentaO.getSaldo()){
+            System.out.println("No se puede realziar la operación, porque la cantida a transferir es mayor al saldo de la cuenta");
+        } else {
+        	if(this.numTransferen<2) {
+        		((Movimientos) cuentaO).Retirar(transferencia);
+                ((Movimientos) cuentaD).Depositar(transferencia);
+        	}
+        }
+        	
+        Cuenta[] cuentasBancaria = new Cuenta[]{
+                cuentaO, cuentaD
+               
+        }; return cuentasBancaria;
+        }
+        
 	
-
-
-
+				
+			
+			
+			
 }

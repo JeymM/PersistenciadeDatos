@@ -5,13 +5,13 @@ public class Cuenta {
 	String  numCuenta;
 	float saldo;
 	String nomPropietario;
-	int tipoCuenta=0;
+	String tipoCuenta;
 
 	// atributos usados como acumulador de deposito y retiro
 	int cantDeposito = 0;
 	int cantRetiros = 0;
 
-	public Cuenta(String numCuenta, float saldo, String nomPropietario,int tipoCuenta) {
+	public Cuenta(String numCuenta, float saldo, String nomPropietario,String tipoCuenta) {
 		super();
 		this.numCuenta = numCuenta;
 		this.saldo = saldo;
@@ -20,18 +20,20 @@ public class Cuenta {
 
 	}
 	
+	
+	
 
 	public Cuenta() {
 		// TODO Auto-generated constructor stub
 	}
 	
 
-	public int getTipoCuenta() {
+	public String getTipoCuenta() {
 		return tipoCuenta;
 	}
 
 
-	public void setTipoCuenta(int tipoCuenta) {
+	public void setTipoCuenta(String tipoCuenta) {
 		this.tipoCuenta = tipoCuenta;
 	}
 
